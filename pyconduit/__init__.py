@@ -1,3 +1,4 @@
 from .pipe import Pipe
 
-TEST="test"
+EMITTER  = 'emitter'
+RECEIVER = 'receiver' 

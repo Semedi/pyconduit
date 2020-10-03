@@ -1,11 +1,12 @@
 import pika
 
-from .base import BaseClient
+from .meta import Client
 
 _opts = ['mode']
-class PikaClient(BaseClient):
-    def __init__(self, mode):
-        self.mode = mode
+class PikaClient(Client):
+    def __init__(self, mode, config):
+        self.mode   = mode
+        self.config = config
         print("hola Mundo")
 
     def send(self):
