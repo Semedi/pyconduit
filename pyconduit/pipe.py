@@ -1,13 +1,15 @@
-from pyconduit.meta import constructor
+from pyconduit.meta import builder
 from pyconduit.pikaclient import PikaClient
 
-@constructor
+# Client Factory:
+@builder
 def _ampq(mode, config):
     return PikaClient(mode, config)
 
 _factory = {
     'ampq': _ampq
 }
+
 class Pipe:
 
     def __init__(self, mode, client, config):

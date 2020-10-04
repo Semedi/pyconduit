@@ -25,15 +25,12 @@ class PikaClient(Client):
             exchange_type = 'topic'
         )
 
-
-
     def send(self, message):
         self.channel.basic_publish(
             exchange=self.config['exchange'],
             routing_key=self.config['topic'],
             body=message
         )
-
 
     def receive(self):
         print("hola Mundo")

@@ -65,7 +65,7 @@ class Client(object, metaclass=MetaClient):
         raise NotImplementedError
 
 
-def constructor(f):
+def builder(f):
     def wrapper(*args, **kwargs):
         if args[0] not in [EMITTER, RECEIVER]:
             raise ValueError("mode should be emitter or receiver")
