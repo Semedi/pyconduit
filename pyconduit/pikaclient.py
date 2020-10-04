@@ -1,6 +1,18 @@
 import pika
 
 from pyconduit.meta import Client
+import inspect
+import hashlib
+
+
+def _name_gen():
+    seed = ''
+    for p in inspect.stack():
+        seed += p[1]
+
+    name = hashlib.sha256(seed.encode('utf-8')).hexdigest()[0:10]
+
+    return "queue.{}".format(name)
 
 _opts = ['exchange', 'topics']
 class PikaClient(Client):
@@ -15,14 +27,12 @@ class PikaClient(Client):
 
         if type(config['topics']) != list:
             self.config['topics'] = [self.config['topics']]
-            
-        if 'host' in config:
-            host =  config['host']
-        else:
-            host = 'localhost'
 
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host))
-        self.channel    = self.connection.channel()
+        host = config.get('host', 'localhost')
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host)
+        )
+        self.channel      = self.connection.channel()
         self.channel.exchange_declare(
             exchange      = config['exchange'],
             exchange_type = 'topic'
