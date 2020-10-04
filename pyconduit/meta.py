@@ -5,7 +5,11 @@ _TYPE   = 'type'
 _VALUES = 'values' 
 
 class MetaClient(ABCMeta):
-    _required_attrs = {}
+    _required_attrs  = {}
+    _forbidden_calls = {} 
+
+    def _forbidden(cls): 
+        raise RuntimeError("forbidden method call with this mode!")
 
     def __call__(self, *args, **kwargs):
         obj = super(MetaClient, self).__call__(*args, **kwargs)
@@ -25,6 +29,9 @@ class MetaClient(ABCMeta):
             if getattr(obj, attr) not in v:
                 raise AttributeError("attribute (%s) must include one of the following: %s" % (attr, str(v)))
 
+        for f in obj._forbidden_calls[obj.mode]:
+            obj.__setattr__(f, MetaClient._forbidden)
+
         return obj
 
 class Client(object, metaclass=MetaClient):
@@ -37,6 +44,12 @@ class Client(object, metaclass=MetaClient):
             _TYPE: dict
         }
     }
+
+    _forbidden_calls = {
+        EMITTER: ['receive'],
+        RECEIVER: ['send']
+    }
+
 
     @classmethod
     def __subclass_hook__(cls, subclass):

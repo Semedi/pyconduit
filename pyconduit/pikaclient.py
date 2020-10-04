@@ -2,17 +2,20 @@ import pika
 
 from pyconduit.meta import Client
 
-_opts = ['exchange', 'topic']
+_opts = ['exchange', 'topics']
 class PikaClient(Client):
     def __init__(self, mode, config):
-        self.mode   = mode
 
         for k in _opts:
             if k not in config:
                 raise AttributeError("attribute %s is mandatory inside config" % k)
 
+        self.mode   = mode
         self.config = config
 
+        if type(config['topics']) != list:
+            self.config['topics'] = [self.config['topics']]
+            
         if 'host' in config:
             host =  config['host']
         else:
@@ -26,9 +29,11 @@ class PikaClient(Client):
         )
 
     def send(self, message):
+
+        topic = self.config['topics'][0]
         self.channel.basic_publish(
             exchange=self.config['exchange'],
-            routing_key=self.config['topic'],
+            routing_key=topic,
             body=message
         )
 

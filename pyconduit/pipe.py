@@ -17,7 +17,6 @@ class Pipe:
             raise ValueError("client (%s) does not exist" % client)
             
         self.client = _factory[client](mode, config)
-        print("Hola Mundo")
 
     
     def send(self):
