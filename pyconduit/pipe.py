@@ -16,3 +16,10 @@ class Pipe:
             
         self.client = _factory[client](mode, config)
         print("Hola Mundo")
+
+    
+    def send(self):
+        self.client.send("test")
+
+    def close(self):
+        self.client.close()
