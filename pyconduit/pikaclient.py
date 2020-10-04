@@ -7,7 +7,13 @@ class PikaClient(Client):
     def __init__(self, mode, config):
         self.mode   = mode
         self.config = config
-        print("hola Mundo")
+
+        if 'host' in config:
+            host =  config['host']
+        else:
+            host = 'localhost'
+
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host))
 
     def send(self):
         print("hola Mundo")

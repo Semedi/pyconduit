@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from . import EMITTER, RECEIVER
+from pyconduit.const import EMITTER, RECEIVER
 
 _TYPE   = 'type'
 _VALUES = 'values' 
@@ -63,3 +63,18 @@ class Client(object, metaclass=MetaClient):
     @abstractmethod
     def close(self):
         raise NotImplementedError
+
+
+def constructor(f):
+    def wrapper(*args, **kwargs):
+        if args[0] not in [EMITTER, RECEIVER]:
+            raise ValueError("mode should be emitter or receiver")
+
+        i = f(*args, **kwargs)
+
+        if not isinstance(i, Client):
+            raise TypeError("instance (%i) not type Client" % str(i))
+
+        return i
+    return wrapper
+
