@@ -11,7 +11,6 @@ _factory = {
 }
 
 class Pipe:
-
     def __init__(self, mode, client, config):
         if client not in _factory.keys():
             raise ValueError("client (%s) does not exist" % client)

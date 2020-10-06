@@ -5,6 +5,6 @@ p = pyconduit.Pipe(
     'ampq', 
     {
         'exchange': "a", 
-        'topics': "pene.hola"
+        'topics': "test.topic"
     }
 )
