@@ -6,6 +6,7 @@ from pyconduit.const import EMITTER, RECEIVER
 
 import inspect
 import hashlib
+import json
 
 import time
 
@@ -42,11 +43,16 @@ class Manager():
         self.callback = callback
 
     def __call__(self, ch, method, properties, body):
-        print(" [x] Received {}:{} - {}".format(method.routing_key, body.decode(), time.time()))
+        message = body.decode()
+        print(" [x] Received {}:{} - {}".format(method.routing_key, message, time.time()))
 
-        self.callback("test")
+        if type(message) == dict:
+            data = json.loads(message)
+        else:
+            data = message
 
-        print(" [x] Done")
+        self.callback(data)
+
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
 _opts = ['exchange', 'topics']
