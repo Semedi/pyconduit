@@ -12,6 +12,49 @@ Some example may be:
 * AWS SQS or other cloud providers
 * Python3 queues using multiprocessing
 
+# Examples
+
+### Emitter
+```
+import pyconduit
+
+p = pyconduit.Pipe(
+    pyconduit.EMITTER, 
+    'ampq', 
+    {
+        'exchange': "test", 
+        'topics': "topic01"
+    }
+)
+
+
+p.send({"example": "data"})
+```
+
+### Receiver
+```
+import pyconduit
+
+p = pyconduit.Pipe(
+    pyconduit.RECEIVER, 
+    'ampq', 
+    {
+        'exchange': "test", 
+        'topics': "topic01"
+    }
+)
+
+@p.get()
+def receive(data):
+    print("received:")
+    print(data)
+
+
+
+# Blocking call
+p.consume()
+```
+
 # Contributing
 
 To contribute pyconduit simpy upload your new pyconduit.meta.Client class with the proper interface already covered.
