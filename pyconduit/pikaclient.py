@@ -6,6 +6,7 @@ from pyconduit.const import EMITTER, RECEIVER
 
 import inspect
 import hashlib
+import json
 
 import time
 
@@ -42,11 +43,16 @@ class Manager():
         self.callback = callback
 
     def __call__(self, ch, method, properties, body):
-        print(" [x] Received {}:{} - {}".format(method.routing_key, body.decode(), time.time()))
+        message = body.decode()
+        print(" [x] Received {}:{} - {}".format(method.routing_key, message, time.time()))
 
-        self.callback("test")
+        if type(message) == dict:
+            data = json.loads(message)
+        else:
+            data = message
 
-        print(" [x] Done")
+        self.callback(data)
+
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
 _opts = ['exchange', 'topics']
@@ -68,10 +74,19 @@ class PikaClient(Client):
         self.connection = _connect(host)
         self.channel    = self.connection.channel()
 
-        _exchange_check(self.channel, config.get('exchange'))
+        exchange = config.get('exchange')
+        _exchange_check(self.channel, exchange)
 
-        if mode == EMITTER:
-            print("hola")
+        if mode == RECEIVER:
+            self.queue = _name_gen()
+            self.channel.queue_declare(queue=self.queue)
+
+            for binding in self.config['topics']:
+                self.channel.queue_bind(
+                    exchange=exchange,
+                    queue=self.queue,
+                    routing_key=binding
+                )
 
     def send(self, message):
 
@@ -82,16 +97,21 @@ class PikaClient(Client):
             body=message
         )
 
+    def set_manager(self, f):
+        self.manager = Manager(f)
+
+        self.channel.basic_consume(
+            queue=self.queue,
+            auto_ack=False,
+            on_message_callback=self.manager
+        )
+
     def receive(self):
+        if not self.manager:
+            raise RuntimeError("@get decorator should be used")
 
-        def decorator(f):
-            self.manager = Manager(f)
+        self.channel.start_consuming()
 
-            return f
-        return decorator
-    
-    def run():
-        print("Hola Mundo")
 
     def close(self):
         self.connection.close()
