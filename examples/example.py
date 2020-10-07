@@ -4,7 +4,10 @@ p = pyconduit.Pipe(
     pyconduit.EMITTER, 
     'ampq', 
     {
-        'exchange': "a", 
-        'topics': "test.topic"
+        'exchange': "test", 
+        'topics': "topic01"
     }
 )
+
+
+p.send({"example": "data"})
