@@ -28,5 +28,16 @@ class Pipe:
 
         self.client.send(message)
 
+
+    def get(self):
+        def decorator(f):
+            self.client.set_manager(f)
+
+            return f
+        return decorator
+
+    def consume(self):
+        self.client.receive()
+
     def close(self):
         self.client.close()
