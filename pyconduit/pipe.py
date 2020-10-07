@@ -1,6 +1,8 @@
 from pyconduit.meta import builder
 from pyconduit.pikaclient import PikaClient
 
+import json
+
 # Client Factory:
 @builder
 def _ampq(mode, config):
@@ -18,8 +20,13 @@ class Pipe:
         self.client = _factory[client](mode, config)
 
     
-    def send(self):
-        self.client.send("test")
+    def send(self, data):
+        if type(data) != dict:
+            raise RuntimeError("please pack your message into a dict object")
+
+        message = json.dumps(data)
+
+        self.client.send(message)
 
     def close(self):
         self.client.close()
